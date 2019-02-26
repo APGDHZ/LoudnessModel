@@ -25,12 +25,10 @@
 % constant and use another Filename (another stimulation strategy) with 
 % the same sound input and see what changed in terms of loudness.
 % 
-% To create .mat files shown in the examples folder, you need specific
-% hard- and software from the manufacturer (Advanced Bionics in this case, 
-% many thanks to them). We used a CPI, Harmony Research Processor and an
-% implant dummy. Software used to create the stimulation patterns
-% (electrodograms) were BEPS+ and a CI Simulator. The strategies were fed
-% with a 9 s long CCITT noise as input.
+% The electrodograms used as input have 16 rows (representing the
+% electrodes). Each column represents one pulse length (e.g. 18 µs), so the
+% total length of an electrodogram depends on the length of the desired
+% signal to be used with a sound coding strategy.
 % 
 %                                                   Florian Langner,
 %                                                   25.02.19
