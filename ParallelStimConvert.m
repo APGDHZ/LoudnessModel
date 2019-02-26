@@ -26,6 +26,7 @@ function StimulationData = ParallelStimConvert(ConvertedMatrix, Filename, ...
 % email: langner.florian@mh-hannover.de
 % Website: https://auditoryprostheticgroup.weebly.com/blog
 % February 2019; Last revision: 25-February-2019
+
 %------------------------ BEGIN CODE --------------------------
 
 % load current compensation function variables

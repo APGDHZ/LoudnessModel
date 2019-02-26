@@ -17,7 +17,7 @@
 %%%% Loudness of time-varying stimuli with electric stimulation.       %%%%
 %%%% J. Acoust. Soc. Am. 135, 3513–9. doi:10.1121/1.4874597            %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+% 
 % The model can be used to predict loudness based on a reference stimulus
 % that is set to a desired sone (loudness) value (e.g. 16 sone, which
 % should correspond to comfortable loudness). To set a reference, use the

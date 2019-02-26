@@ -19,6 +19,7 @@ function CL = I2CL(I)
 % email: langner.florian@mh-hannover.de
 % Website: https://auditoryprostheticgroup.weebly.com/blog
 % February 2019; Last revision: 25-February-2019
+
 %------------------------ BEGIN CODE --------------------------
 
 CL = ( 255 / 2 ) * log10( I / 17.5 );

@@ -3,7 +3,8 @@ function [IndLoudnessContribs] = LoudnessGrowthConversion(Currents, ...
 % Converts the electric current values in µA to loudness contributions 
 % in log loudness via a loudness growth function (LGF).
 % 
-% Syntax:  [EDF] = LoudnessGrowthConversion(q, a, b, c_0, c, k)
+% Syntax:  [IndLoudnessContribs] = LoudnessGrowthConversion(Currents, ...
+%                          LinSlope, ExpSlope, Kneepoint, CurrRange, Const) 
 %
 % Inputs:
 %    Currents  - electric current values across time
@@ -29,6 +30,7 @@ function [IndLoudnessContribs] = LoudnessGrowthConversion(Currents, ...
 % email: langner.florian@mh-hannover.de
 % Website: https://auditoryprostheticgroup.weebly.com/blog
 % February 2019; Last revision: 25-February-2019
+
 %------------------------ BEGIN CODE --------------------------
 
 % loudness growth function (LGF) from McKay et al. 2003 (JASA)

@@ -22,6 +22,7 @@ function [ConvertedMatrix, ElectrodesUsed] = MatrixConversion(Electrodogram)
 % email: langner.florian@mh-hannover.de
 % Website: https://auditoryprostheticgroup.weebly.com/blog
 % February 2019; Last revision: 25-February-2019
+
 %------------------------ BEGIN CODE --------------------------
 
 Electrodes = zeros(length(Electrodogram),4); 

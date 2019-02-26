@@ -20,6 +20,7 @@ function STLoudness = InstLoudness2STLoudness(InitialLoudness, WindowLength)
 % email: langner.florian@mh-hannover.de
 % Website: https://auditoryprostheticgroup.weebly.com/blog
 % February 2019; Last revision: 25-February-2019
+
 %------------------------ BEGIN CODE --------------------------
 
 WindowLength = WindowLength * 1000; % because windowlength is in seconds

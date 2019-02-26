@@ -3,7 +3,8 @@ function [InitialLoudness] = CreateWindowedMatrix(IndLoudnessContribs, ...
 % Creates a temporal integration with an integration window of given
 % length.
 % 
-% Syntax:  [ConvertedMatrix, ElectrodesUsed] = MatrixConversion(Electrodogram)
+% Syntax:  [InitialLoudness] = CreateWindowedMatrix(IndLoudnessContribs, ...
+%                                   StimulationData, WindowLength, PhaseWidth)
 %
 % Inputs:
 %    IndLoudnessContribs  - vector with individual loudness contributions
@@ -23,6 +24,7 @@ function [InitialLoudness] = CreateWindowedMatrix(IndLoudnessContribs, ...
 % email: langner.florian@mh-hannover.de
 % Website: https://auditoryprostheticgroup.weebly.com/blog
 % February 2019; Last revision: 25-February-2019
+
 %------------------------ BEGIN CODE --------------------------
 
 Stepsize = round((10^6*WindowLength)/PhaseWidth);
