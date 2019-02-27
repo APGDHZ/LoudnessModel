@@ -28,7 +28,10 @@
 % The electrodograms used as input have 16 rows (representing the
 % electrodes). Each column represents one pulse length (e.g. 18 µs), so the
 % total length of an electrodogram depends on the length of the desired
-% signal to be used with a sound coding strategy.
+% signal to be used with a sound coding strategy. Please note that the
+% extension used in the code (ParallelStimConvert) uses the aspects of
+% distance and ratio according to the manuscript, called variant DR,
+% derived from figure 8.
 % 
 %                                                   Florian Langner,
 %                                                   25.02.19
