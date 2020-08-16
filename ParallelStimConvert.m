@@ -44,9 +44,10 @@ else
     Compensation = SimLGF(8);
 end
 
-% exponential function for current ratios from Exp. 3
-a = -0.9307; b = 0.1788; c = 104.9; d = -4.537; s = (0:0.01:1);
-RatioFunction = a * exp(b * s) + c * exp(d * x);
+% functions for current ratios from Exp. 3 according to equation 6
+RatioFunctionBelow25 = -0.0537*(0.01:0.01:0.24);
+RatioFunctionFromExp = -1.342-0.0115*(0:0.01:0.5);
+RatioFunctionAbove75 = (((Compensation + 1.919) / (1 - 0.75)) * ((0.76:0.01:0.99) - 0.75) - 1.919)*-1;
 
 % divide the matrix if you want to process it with parfor
 q1 = ConvertedMatrix(1,:); q2 = ConvertedMatrix(2,:);
@@ -80,14 +81,7 @@ for i = 1:length(ConvertedMatrix)
                 Perc2 = 100/(mean([MCL(ElectrodesUsed(i,2)-.5) MCL(ElectrodesUsed(i,2)+.5)]));
                 THL2 = mean([THL(ElectrodesUsed(i,2)-.5) THL(ElectrodesUsed(i,2)+.5)]);
                 PointDR2 = (q2(i)-THL2)*Perc2;
-                
-                % calculate the dynamic range ratio between the dual-channel
-                if PointDR1 > PointDR2; RealRatio = PointDR2/PointDR1;
-                else; RealRatio = PointDR1/PointDR2; end
-                
-                % apply compensation and reduce depending on the current ratio
-                StimulationData(1,i) = 20*log10(q1(i)) - Compensation - RatioFunction(round(RealRatio*100));
-                
+               
             elseif mod(ElectrodesUsed(i,1),1) == 0 && mod(ElectrodesUsed(i,2),1) ~= 0
                 Perc1 = 100/MCL(ElectrodesUsed(i,1));
                 THL1 = THL(ElectrodesUsed(i,1));
@@ -97,10 +91,6 @@ for i = 1:length(ConvertedMatrix)
                 THL2 = mean([THL(ElectrodesUsed(i,2)-.5) THL(ElectrodesUsed(i,2)+.5)]);
                 PointDR2 = (q2(i)-THL2)*Perc2;
                 
-                if PointDR1 > PointDR2; RealRatio = PointDR2/PointDR1;
-                else; RealRatio = PointDR1/PointDR2; end
-                
-                StimulationData(1,i) = 20*log10(q1(i)) - Compensation - RatioFunction(round(RealRatio*100));
             elseif mod(ElectrodesUsed(i,1),1) ~= 0 && mod(ElectrodesUsed(i,2),1) == 0
                 Perc1 = 100/(mean([MCL(ElectrodesUsed(i,1)-.5) MCL(ElectrodesUsed(i,1)+.5)]));
                 THL1 = mean([THL(ElectrodesUsed(i,1)-.5) THL(ElectrodesUsed(i,1)+.5)]);
@@ -110,10 +100,6 @@ for i = 1:length(ConvertedMatrix)
                 THL2 = THL(ElectrodesUsed(i,2));
                 PointDR2 = (q2(i)-THL2)*Perc2;
                 
-                if PointDR1 > PointDR2; RealRatio = PointDR2/PointDR1;
-                else; RealRatio = PointDR1/PointDR2; end
-                
-                StimulationData(1,i) = 20*log10(q1(i)) - Compensation - RatioFunction(round(RealRatio*100));
             else
                 Perc1 = 100/MCL(ElectrodesUsed(i,1));
                 THL1 = THL(ElectrodesUsed(i,1));
@@ -123,12 +109,23 @@ for i = 1:length(ConvertedMatrix)
                 THL2 = THL(ElectrodesUsed(i,2));
                 PointDR2 = (q2(i)-THL2)*Perc2;
                 
-                if PointDR1 > PointDR2; RealRatio = PointDR2/PointDR1;
-                else; RealRatio = PointDR1/PointDR2; end
-                
-                StimulationData(1,i) = 20*log10(q1(i)) - Compensation - RatioFunction(round(RealRatio*100));
             end
-            
+            % calculate the dynamic range ratio between the dual-channels
+            if PointDR1 > PointDR2; RealRatio = 100-floor(round(PointDR2/PointDR1,2)*100);
+                else; RealRatio = 100-floor(round(PointDR1/PointDR2,2)*100); end
+
+            % apply compensation and reduce depending on the current ratio
+            if RealRatio == 0
+                StimulationData(1,i) = 20*log10(q1(i)) - Compensation;
+            elseif RealRatio == 100
+                StimulationData(1,i) = 20*log10(q1(i));
+            elseif RealRatio <= 24
+                StimulationData(1,i) = 20*log10(q1(i)) - Compensation + RatioFunctionBelow25(RealRatio);
+            elseif RealRatio >= 25 && RealRatio <= 75
+                StimulationData(1,i) = 20*log10(q1(i)) - Compensation + RatioFunctionFromExp(RealRatio-24);
+            elseif RealRatio > 75
+                StimulationData(1,i) = 20*log10(q1(i)) - Compensation - RatioFunctionAbove75(RealRatio-75);
+            end
         % if stimulation in the second channel has a higher current than the first
         else
             if mod(ElectrodesUsed(i,1),1) ~= 0 && mod(ElectrodesUsed(i,2),1) ~= 0
@@ -139,11 +136,7 @@ for i = 1:length(ConvertedMatrix)
                 Perc2 = 100/(mean([MCL(ElectrodesUsed(i,2)-.5) MCL(ElectrodesUsed(i,2)+.5)]));
                 THL2 = mean([THL(ElectrodesUsed(i,2)-.5) THL(ElectrodesUsed(i,2)+.5)]);
                 PointDR2 = (q2(i)-THL2)*Perc2;
-                
-                if PointDR1 > PointDR2; RealRatio = PointDR2/PointDR1;
-                else; RealRatio = PointDR1/PointDR2; end
-                
-                StimulationData(1,i) = 20*log10(q1(i)) - Compensation - RatioFunction(round(RealRatio*100));
+
             elseif mod(ElectrodesUsed(i,1),1) == 0 && mod(ElectrodesUsed(i,2),1) ~= 0
                 Perc1 = 100/MCL(ElectrodesUsed(i,1));
                 THL1 = THL(ElectrodesUsed(i,1));
@@ -152,11 +145,7 @@ for i = 1:length(ConvertedMatrix)
                 Perc2 = 100/(mean([MCL(ElectrodesUsed(i,2)-.5) MCL(ElectrodesUsed(i,2)+.5)]));
                 THL2 = mean([THL(ElectrodesUsed(i,2)-.5) THL(ElectrodesUsed(i,2)+.5)]);
                 PointDR2 = (q2(i)-THL2)*Perc2;
-                
-                if PointDR1 > PointDR2; RealRatio = PointDR2/PointDR1;
-                else; RealRatio = PointDR1/PointDR2; end
-                
-                StimulationData(1,i) = 20*log10(q1(i)) - Compensation - RatioFunction(round(RealRatio*100));
+
             elseif mod(ElectrodesUsed(i,1),1) ~= 0 && mod(ElectrodesUsed(i,2),1) == 0
                 Perc1 = 100/(mean([MCL(ElectrodesUsed(i,1)-.5) MCL(ElectrodesUsed(i,1)+.5)]));
                 THL1 = mean([THL(ElectrodesUsed(i,1)-.5) THL(ElectrodesUsed(i,1)+.5)]);
@@ -165,11 +154,7 @@ for i = 1:length(ConvertedMatrix)
                 Perc2 = 100/MCL(ElectrodesUsed(i,2));
                 THL2 = THL(ElectrodesUsed(i,2));
                 PointDR2 = (q2(i)-THL2)*Perc2;
-                
-                if PointDR1 > PointDR2; RealRatio = PointDR2/PointDR1;
-                else; RealRatio = PointDR1/PointDR2; end
-                
-                StimulationData(1,i) = 20*log10(q1(i)) - Compensation - RatioFunction(round(RealRatio*100));
+
             else
                 Perc1 = 100/MCL(ElectrodesUsed(i,1));
                 THL1 = THL(ElectrodesUsed(i,1));
@@ -178,12 +163,24 @@ for i = 1:length(ConvertedMatrix)
                 Perc2 = 100/MCL(ElectrodesUsed(i,2));
                 THL2 = THL(ElectrodesUsed(i,2));
                 PointDR2 = (q2(i)-THL2)*Perc2;
-                
-                if PointDR1 > PointDR2; RealRatio = PointDR2/PointDR1;
-                else; RealRatio = PointDR1/PointDR2; end
-                
-                StimulationData(1,i) = 20*log10(q1(i)) - Compensation - RatioFunction(round(RealRatio*100));
             end
+            
+                % calculate the dynamic range ratio between the dual-channels
+                if PointDR1 > PointDR2; RealRatio = 100-floor(round(PointDR2/PointDR1,2)*100);
+                else; RealRatio = 100-floor(round(PointDR1/PointDR2,2)*100); end
+                
+                % apply compensation and reduce depending on the current ratio
+                if RealRatio == 0
+                    StimulationData(1,i) = 20*log10(q1(i)) - Compensation;
+                elseif RealRatio == 100
+                    StimulationData(1,i) = 20*log10(q1(i));
+                elseif RealRatio <= 24
+                    StimulationData(1,i) = 20*log10(q1(i)) - Compensation + RatioFunctionBelow25(RealRatio);
+                elseif RealRatio >= 25 && RealRatio <= 75
+                    StimulationData(1,i) = 20*log10(q1(i)) - Compensation + RatioFunctionFromExp(RealRatio-24);
+                elseif RealRatio > 75
+                    StimulationData(1,i) = 20*log10(q1(i)) - Compensation - RatioFunctionAbove75(RealRatio-75);
+                end
         end
         % return from dB to µA
         StimulationData(1,i) = 10.^(StimulationData(1,i)/20);

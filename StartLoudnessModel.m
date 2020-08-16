@@ -59,9 +59,19 @@ Electrodogram(Electrodogram < 0) = 0;
 
 % Determine highest current per channel and declare it most comfortable level
 MCL = max( Electrodogram ); 
+MCL = 10.^((20*log10(MCL)-Reduction)/20);
 
 % Determine smallest current per channel and declare it threshold
-THL = min( Electrodogram ); 
+THL = zeros(1,size(Electrodogram,2));
+for i = 1:size(Electrodogram,2)
+    ElecChannel = Electrodogram(:,i);
+    if sum(ElecChannel) == 0
+        THL(1,i) = 0;
+    else
+        THL(1,i) = min(ElecChannel(ElecChannel>0));
+    end
+end
+THL = 10.^((20*log10(THL)-Reduction)/20);
 
 % use current compensation if simultaneous/parallel stimulation is used 
 % (here it is depending on the keyword "Paired" in Filename)
@@ -85,7 +95,7 @@ end
 % load loudness model variables 
 % (explained in the LoudnessGrowthConversion function)
 LinSlope = 14.3; Kneepoint = 174; ExpSlope = .019; 
-CurrRange = 0:255; Const = -3.985; 
+CurrRange = 0:255; Const = -4.062; 
 IndLoudnessContribs = LoudnessGrowthConversion(round(StimulationData), ...
                       ExpSlope, LinSlope, Kneepoint, CurrRange, Const);
 
