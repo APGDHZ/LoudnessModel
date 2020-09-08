@@ -30,7 +30,7 @@ function StimulationData = ParallelStimConvert(ConvertedMatrix, Filename, ...
 %------------------------ BEGIN CODE --------------------------
 
 % load current compensation function variables
-x = 4.913; y = 0.24; SimLGF = y.*(0:1:12)-x;
+x = 4.525; y = 0.2153; SimLGF = y.*(0:1:12)-x;
 
 % use the base current compensation which is altered later depending on the
 % current ratio between channels and the place of stimulation
@@ -45,9 +45,9 @@ else
 end
 
 % functions for current ratios from Exp. 3 according to equation 6
-RatioFunctionBelow25 = -0.0537*(0.01:0.01:0.24);
-RatioFunctionFromExp = -1.342-0.0115*(0:0.01:0.5);
-RatioFunctionAbove75 = (((Compensation + 1.919) / (1 - 0.75)) * ((0.76:0.01:0.99) - 0.75) - 1.919)*-1;
+RatioFunctionBelow25 = -5.368*(0.01:0.01:0.25);
+RatioFunctionFromExp = -1.342-1.27*(0:0.01:0.5);
+RatioFunctionAbove75 = (((-Compensation + 1.977) / (1 - 0.75)) * ((0.75:0.01:1) - 0.75) - 1.977);
 
 % divide the matrix if you want to process it with parfor
 q1 = ConvertedMatrix(1,:); q2 = ConvertedMatrix(2,:);
